@@ -1,5 +1,5 @@
-#!/bin/bash
-set -v
+#!/bin/bash -v
+
 cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 mkdir -p lab1
 cd lab1
@@ -21,12 +21,6 @@ then
     wget --no-clobber https://github.com/gt1/biobambam2/releases/download/2.0.87-release-20180301132713/biobambam2-2.0.87-release-20180301132713-x86_64-etch-linux-gnu.tar.gz
     tar -xzf biobambam2-2.0.87-release-20180301132713-x86_64-etch-linux-gnu.tar.gz
 fi
-if [[ ! -d samtools-1.11 ]]
-then
-    wget --no-clobber https://github.com/samtools/samtools/releases/download/1.11/samtools-1.11.tar.bz2
-    tar -xjf samtools-1.11.tar.bz2
-    ( cd samtools-1.11 && make )
-fi
 wget --no-clobber https://pages.mini.pw.edu.pl/~chilinskim/GO_files/GenomeAnalysisTK.jar
 # Produces
 # GRCh38_full_analysis_set_plus_decoy_hla.fa.amb
@@ -41,6 +35,14 @@ fi
 if [[ ! -f ../data/SRR.sam ]]
 then
     ./bwa-0.7.17/bwa mem -t 1 -B 4 -O 6 -E 1 -M -R "@RG\tID:SRR\tLB:LIB_1\tSM:SAMPLE_1\tPL:ILLUMINA" ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa ../data/SRR590764_1.filt.fastq ../data/SRR590764_2.filt.fastq > ../data/SRR.sam
+fi
+if [[ ! -f ../data/SRR.bam ]]
+then
+    cd ../data
+    samtools view -S -b SRR.sam > SRR.bam
+    samtools sort SRR.bam > SRR_sorted.bam
+    samtools index SRR_sorted.bam
+    cd ../lab1
 fi
 if [[ ! -f ../data/ALL.wgs.1000G_phase3.GRCh38.ncbi_remapper.20150424.shapeit2_indels.vcf ]]
 then
@@ -85,7 +87,7 @@ fi
 if [[ ! -f ../data/SRR_final_sorted.bam ]]
 then
     cd ../data
-    ../lab1/samtools-1.11/samtools sort SRR_final.bam > SRR_final_sorted.bam
-    ../lab1/samtools-1.11/samtools index SRR_final_sorted.bam
+    samtools sort SRR_final.bam > SRR_final_sorted.bam
+    samtools index SRR_final_sorted.bam
     cd ../lab1
 fi

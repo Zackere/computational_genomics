@@ -13,7 +13,7 @@
   "settings": {},
 
   // Add the IDs of extensions you want installed when the container is created.
-  "extensions": [],
+  "extensions": ["esbenp.prettier-vscode"],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
@@ -23,10 +23,5 @@
 
   // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "vscode",
-  "features": {
-    "git": "latest",
-    "node": "lts",
-    "python": "latest",
-    "java": "lts"
-  }
+  "features": {}
 }
