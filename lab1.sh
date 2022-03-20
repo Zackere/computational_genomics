@@ -1,4 +1,4 @@
-cd /workspaces/comp_genomics
+cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 mkdir -p lab1
 cd lab1
 

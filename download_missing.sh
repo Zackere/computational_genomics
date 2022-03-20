@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 files=()
 
 # Lab 1
@@ -31,8 +31,8 @@ files+=( https://pages.mini.pw.edu.pl/~chilinskim/GO_files/IntermediateFiles/SRR
 files+=( https://pages.mini.pw.edu.pl/~chilinskim/GO_files/eqtl_anal/ALL.wgs.mergedSV.v8.20130502.svs.genotypes.vcf )
 files+=( https://pages.mini.pw.edu.pl/~chilinskim/GO_files/eqtl_anal/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt )
 
-mkdir -p /workspaces/comp_genomics/data
-cd /workspaces/comp_genomics/data
+mkdir -p data
+cd data
 for file in ${files[@]}
 do
 	wget --no-clobber "$file"
