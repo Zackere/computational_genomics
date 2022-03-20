@@ -1,4 +1,5 @@
 #!/bin/bash
+set -v
 cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 files=()
 
@@ -33,6 +34,9 @@ files+=( https://pages.mini.pw.edu.pl/~chilinskim/GO_files/eqtl_anal/GD462.GeneQ
 
 mkdir -p data
 cd data
+
+wget --no-clobber https://spages.mini.pw.edu.pl/~replinw/computational_genomics.7z && 7z e computational_genomics.7z
+
 for file in ${files[@]}
 do
 	wget --no-clobber "$file"

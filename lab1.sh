@@ -1,3 +1,5 @@
+#!/bin/bash
+set -v
 cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 mkdir -p lab1
 cd lab1
@@ -57,7 +59,33 @@ if [[ ! -f ../data/Mills_and_1000G_gold_standard.indels.b38.primary_assembly.vcf
 then
     ( cd ../data && gunzip -k Mills_and_1000G_gold_standard.indels.b38.primary_assembly.vcf.gz )
 fi
-if [[ ! -f ALL_20141222.dbSNP142_human_GRCh38.snps.vcf ]]
+if [[ ! -f ../data/ALL_20141222.dbSNP142_human_GRCh38.snps.vcf ]]
 then
     ( cd ../data && gunzip -k ALL_20141222.dbSNP142_human_GRCh38.snps.vcf.gz )
+fi
+if [[ ! -f ../data/SRR_sorted_p2.bam ]]
+then
+    cd ../data
+    java -Xmx4g -jar ../lab1/GenomeAnalysisTK.jar -T IndelRealigner -R GRCh38_full_analysis_set_plus_decoy_hla.fa -I SRR_sorted.bam -o SRR_sorted_p2.bam -targetIntervals SRR_sorted.intervals -known ALL.wgs.1000G_phase3.GRCh38.ncbi_remapper.20150424.shapeit2_indels.vcf -known Mills_and_1000G_gold_standard.indels.b38.primary_assembly.vcf -LOD 0.4 -model KNOWNS_ONLY -compress 0 --disable_bam_indexing
+    samtools index SRR_sorted_p2.bam
+    cd ../lab1
+fi
+if [[ ! -f ../data/SRR_sorted_recal_data.table ]]
+then
+    ( cd ../data && java -Xmx4g -jar ../lab1/GenomeAnalysisTK.jar -T BaseRecalibrator -nt 1 -l INFO -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov ContextCovariate -R GRCh38_full_analysis_set_plus_decoy_hla.fa -o SRR_sorted_recal_data.table -I SRR_sorted_p2.bam -knownSites ALL_20141222.dbSNP142_human_GRCh38.snps.vcf )
+fi
+if [[ ! -f ../data/SRR_sorted_p3.bam ]]
+then
+    ( cd ../data && java -Xmx4g -jar ../lab1/GenomeAnalysisTK.jar -T PrintReads -l INFO -R GRCh38_full_analysis_set_plus_decoy_hla.fa -o SRR_sorted_p3.bam -I SRR_sorted_p2.bam -BQSR SRR_sorted_recal_data.table --disable_bam_indexing )
+fi
+if [[ ! -f ../data/SRR_final.bam ]]
+then
+    ( cd ../data && ../lab1/biobambam2/2.0.87-release-20180301132713/x86_64-etch-linux-gnu/bin/bammarkduplicates I=SRR_sorted_p3.bam O=SRR_final.bam index=1 rmdup=0 )
+fi
+if [[ ! -f ../data/SRR_final_sorted.bam ]]
+then
+    cd ../data
+    ../lab1/samtools-1.11/samtools sort SRR_final.bam > SRR_final_sorted.bam
+    ../lab1/samtools-1.11/samtools index SRR_final_sorted.bam
+    cd ../lab1
 fi
