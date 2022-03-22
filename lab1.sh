@@ -4,22 +4,11 @@ cd $( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 mkdir -p lab1
 cd lab1
 
-if [[ ! -d bwa-0.7.17 ]]
-then
-    wget --no-clobber https://netcologne.dl.sourceforge.net/project/bio-bwa/bwa-0.7.17.tar.bz2
-    tar -xjf bwa-0.7.17.tar.bz2
-    ( cd bwa-0.7.17 && make )
-fi
 if [[ ! -f hs38DH.fa.alt ]]
 then
     wget --no-clobber https://netcologne.dl.sourceforge.net/project/bio-bwa/bwakit/bwakit-0.7.15_x64-linux.tar.bz2
     tar -xjf bwakit-0.7.15_x64-linux.tar.bz2
     cp bwa.kit/resource-GRCh38/hs38DH.fa.alt .
-fi
-if [[ ! -d biobambam2 ]]
-then
-    wget --no-clobber https://github.com/gt1/biobambam2/releases/download/2.0.87-release-20180301132713/biobambam2-2.0.87-release-20180301132713-x86_64-etch-linux-gnu.tar.gz
-    tar -xzf biobambam2-2.0.87-release-20180301132713-x86_64-etch-linux-gnu.tar.gz
 fi
 wget --no-clobber https://pages.mini.pw.edu.pl/~chilinskim/GO_files/GenomeAnalysisTK.jar
 # Produces
@@ -30,11 +19,11 @@ wget --no-clobber https://pages.mini.pw.edu.pl/~chilinskim/GO_files/GenomeAnalys
 # GRCh38_full_analysis_set_plus_decoy_hla.fa.sa
 if [[ ! -f ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa.amb ]]
 then
-    ./bwa-0.7.17/bwa index ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa
+    bwa index ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa
 fi
 if [[ ! -f ../data/SRR.sam ]]
 then
-    ./bwa-0.7.17/bwa mem -t 1 -B 4 -O 6 -E 1 -M -R "@RG\tID:SRR\tLB:LIB_1\tSM:SAMPLE_1\tPL:ILLUMINA" ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa ../data/SRR590764_1.filt.fastq ../data/SRR590764_2.filt.fastq > ../data/SRR.sam
+    bwa mem -t 1 -B 4 -O 6 -E 1 -M -R "@RG\tID:SRR\tLB:LIB_1\tSM:SAMPLE_1\tPL:ILLUMINA" ../data/GRCh38_full_analysis_set_plus_decoy_hla.fa ../data/SRR590764_1.filt.fastq ../data/SRR590764_2.filt.fastq > ../data/SRR.sam
 fi
 if [[ ! -f ../data/SRR.bam ]]
 then
@@ -82,7 +71,7 @@ then
 fi
 if [[ ! -f ../data/SRR_final.bam ]]
 then
-    ( cd ../data && ../lab1/biobambam2/2.0.87-release-20180301132713/x86_64-etch-linux-gnu/bin/bammarkduplicates I=SRR_sorted_p3.bam O=SRR_final.bam index=1 rmdup=0 )
+    ( cd ../data && bammarkduplicates I=SRR_sorted_p3.bam O=SRR_final.bam index=1 rmdup=0 )
 fi
 if [[ ! -f ../data/SRR_final_sorted.bam ]]
 then
